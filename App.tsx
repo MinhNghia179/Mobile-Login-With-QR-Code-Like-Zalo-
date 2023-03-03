@@ -7,8 +7,7 @@
 
 import {BarCodeScanner} from 'expo-barcode-scanner';
 import React, {useEffect, useState} from 'react';
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-
+import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import {Socket} from './Socket';
 
 function App(): JSX.Element {
@@ -17,18 +16,16 @@ function App(): JSX.Element {
 
   useEffect(() => {
     Socket();
-
     const getBarCodeScannerPermissions = async () => {
       const {status} = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     };
-
     getBarCodeScannerPermissions();
   }, []);
 
   const handleBarCodeScanned = ({type, data}: {type: string; data: string}) => {
     setScanned(true);
-    console.log(type, data);
+    Alert.alert(type, data);
   };
 
   if (hasPermission === null) {
@@ -39,20 +36,15 @@ function App(): JSX.Element {
   }
 
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-        />
-        {scanned && (
-          <Button
-            title={'Tap to Scan Again'}
-            onPress={() => setScanned(false)}
-          />
-        )}
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <BarCodeScanner
+        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        style={StyleSheet.absoluteFillObject}
+      />
+      {scanned && (
+        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
+      )}
+    </View>
   );
 }
 
